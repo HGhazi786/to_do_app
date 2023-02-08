@@ -1,91 +1,76 @@
-import Image from 'next/image'
+"use client"
 import { Inter } from '@next/font/google'
 import styles from './page.module.css'
-
+import React, { useState} from "react";
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
+interface Todo {
+  text: string;
+  completed: boolean;
+}
+
+const TodoList: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  const addTodo = (text: string) => {
+    setTodos([...todos, { text, completed: false }]);
+  };
+
+  const toggleTodo = (index: number) => {
+    const newTodos = [...todos];
+    newTodos[index].completed = !newTodos[index].completed;
+    setTodos(newTodos);
+  };
+
+  const removeTodo = (index: number) => {
+    const newTodos = [...todos];
+    newTodos.splice(index, 1);
+    setTodos(newTodos);
+  };
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <main>
+      <title>TO DO LIST</title>
+      <div className='pt-20'>
+        <center>
+          <h1 className="text-black text-7xl font-bold leading-tight">
+            T O D O's
+          </h1>
+        </center>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
+      <div className='pt-9'>
+      <center>
+      <div className='flex justify-center h-fit w-3/5 bg-black rounded-3xl shadow-2xl opacity-75'>
+      <div className='py-5'>
+      <form onSubmit={(e) => {
+          e.preventDefault();
+          const form = e.target as HTMLFormElement;
+          const input = form.elements.namedItem('todo') as HTMLInputElement;
+          addTodo(input.value);
+          form.reset();
+        }}>
+        <input name="todo" className="p-2 border border-gray-400 rounded-lg w-20%" type="text" placeholder="Enter Task" />
+        <button className="p-2 bg-blue-500 text-white rounded-lg" type="submit">
+          Add Task
+        </button>
+      </form>
+      <ul className='pt-7 font-light text-white'>
+      {todos.map((todo, index) => (
+          <li key={index} style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+            {todo.text}{' '}
+            <button className="p-2 bg-blue-500 text-white rounded-lg space-x-3" type="button" onClick={() => toggleTodo(index)}>
+              {todo.completed ? 'Uncomplete' : 'Complete'}
+            </button>
+            <button className="p-2 bg-blue-500 text-white rounded-lg" type="button" onClick={() => removeTodo(index)}>
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
       </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      </div>
+      </center>
       </div>
     </main>
   )
 }
+export default TodoList
